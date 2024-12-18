@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Input } from "@/components/ui/input"
 import { Command, User, Bot, Loader2, Check, ChevronDown } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
@@ -77,10 +76,10 @@ export function Sidebar() {
         if (prev >= taskDetails.length - 1) return 0
         return prev + 1
       })
-    }, 3000) // Change task every 3 seconds
+    }, 3000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [taskDetails.length])
 
   const currentTask = taskDetails.find(task => task.status === 'active')
 

@@ -1,34 +1,10 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
-import { Loader2, User, Calendar, BarChart, Mail, Briefcase, Phone, FileText, Clock, Check, Brain as BrainIcon } from "lucide-react"
-import { Inter, Doto, Funnel_Display } from 'next/font/google'
+import { useEffect, useState } from "react"
+import { Loader2, Brain as BrainIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
-import { Expandable, ExpandableTrigger, ExpandableContent } from "@/components/ui/expandable"
 import { cn } from "@/lib/utils"
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400'],
-})
-
-const doto = Doto({
-  subsets: ['latin'],
-  weight: ['400'],
-})
-
-const funnelDisplay = Funnel_Display({
-  subsets: ['latin'],
-  weight: ['400'],
-})
-
-interface TaskDetail {
-  icon: React.ElementType
-  label: string
-  value: string
-  status: 'pending' | 'active' | 'completed'
-}
 
 interface BrainProps {
   currentTask?: {

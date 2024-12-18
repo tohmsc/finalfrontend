@@ -7,8 +7,6 @@ import useMeasure from "react-use-measure"
 
 import { cn } from "@/lib/utils"
 
-const springConfig = { stiffness: 200, damping: 20, bounce: 0.2 }
-
 interface ExpandableContextType {
   isExpanded: boolean
   toggleExpand: () => void
@@ -115,20 +113,15 @@ Expandable.displayName = "Expandable"
 
 interface ExpandableCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
-  collapsedSize?: { width?: number; height?: number }
-  expandedSize?: { width?: number; height?: number }
   hoverToExpand?: boolean
   expandDelay?: number
   collapseDelay?: number
 }
 
 const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
-  ({ className, children, collapsedSize, expandedSize, ...props }, ref) => {
-    const { isExpanded, expandDirection } = useExpandable()
-    const [measureRef, bounds] = useMeasure()
-
-    const width = isExpanded ? expandedSize?.width : collapsedSize?.width
-    const height = isExpanded ? expandedSize?.height : collapsedSize?.height
+  ({ className, children, ...props }, ref) => {
+    const { isExpanded } = useExpandable()
+    const [measureRef] = useMeasure()
 
     return (
       <motion.div
@@ -138,11 +131,13 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
           className
         )}
         animate={{
-          width: width ? `${width}px` : "auto",
-          height: height ? `${height}px` : "auto",
+          height: isExpanded ? "auto" : "52px",
         }}
-        transition={{ type: "spring", ...springConfig }}
-        {...props}
+        transition={{
+          duration: 0.2,
+          ease: "easeInOut"
+        }}
+        {...(props as HTMLMotionProps<"div">)}
       >
         <div ref={measureRef}>{children}</div>
       </motion.div>
@@ -187,10 +182,10 @@ interface ExpandableContentProps extends HTMLMotionProps<"div"> {
   preset?: "fade" | "slide-up" | "slide-down" | "slide-left" | "slide-right"
   keepMounted?: boolean
   animateIn?: {
-    initial?: any
-    animate?: any
-    exit?: any
-    transition?: any
+    initial?: { [key: string]: number | string }
+    animate?: { [key: string]: number | string }
+    exit?: { [key: string]: number | string }
+    transition?: { duration?: number; ease?: string }
   }
 }
 
@@ -198,7 +193,12 @@ const ExpandableContent = React.forwardRef<HTMLDivElement, ExpandableContentProp
   ({ preset, keepMounted = true, animateIn, children, ...props }, ref) => {
     const { isExpanded } = useExpandable()
 
-    const presets = {
+    const presets: Record<string, {
+      initial: { [key: string]: number }
+      animate: { [key: string]: number }
+      exit: { [key: string]: number }
+      transition?: { duration?: number; ease?: string }
+    }> = {
       fade: {
         initial: { opacity: 0 },
         animate: { opacity: 1 },
@@ -243,7 +243,7 @@ const ExpandableContent = React.forwardRef<HTMLDivElement, ExpandableContentProp
             transition={{
               duration: 0.2,
               ease: "easeInOut",
-              ...animation?.transition,
+              ...(animation?.transition || {}),
             }}
             {...props}
           >
@@ -280,14 +280,6 @@ const ExpandableTrigger = React.forwardRef<
   )
 })
 ExpandableTrigger.displayName = "ExpandableTrigger"
-
-type SystemStatus = "processing" | "ready"
-
-interface SystemStats {
-  latency: string
-  load: string
-  memory: string
-}
 
 const GridAnimation = () => {
   return (
